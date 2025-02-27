@@ -1,0 +1,10 @@
+config/inference/test.yaml
+.hydra/config.yaml
+.hydra/hydra.yaml
+.hydra/overrides.yaml
+RFDiffusionAA_paper_weights.pt
+rf_se3_diffusion.sif
+schedule_cache/*
+cached_schedules/*
+__pycache__/*
+*/__pycache__/*

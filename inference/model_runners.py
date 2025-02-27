@@ -91,10 +91,14 @@ class Sampler:
         if self.inf_conf.ppi_design and self.inf_conf.autogenerate_contigs:
             self.ppi_conf.binderlen = ''.join(chain_idx[0] for chain_idx in self.target_feats['pdb_idx']).index('B')
 
-        self.potential_manager = PotentialManager(self.potential_conf, 
-                                                  self.ppi_conf, 
-                                                  self.diffuser_conf, 
-                                                  self.inf_conf)
+        # adding target features - NG
+        self.potential_manager = PotentialManager(
+            self.potential_conf,
+            self.ppi_conf, 
+            self.diffuser_conf, 
+            self.inf_conf,
+            self.target_feats
+        )
         
         # Get recycle schedule    
         recycle_schedule = str(self.inf_conf.recycle_schedule) if self.inf_conf.recycle_schedule is not None else None

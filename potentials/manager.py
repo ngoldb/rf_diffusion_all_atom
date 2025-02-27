@@ -79,14 +79,15 @@ class PotentialManager:
         Class to define a set of potentials from the given config object and to apply all of the specified potentials
         during each cycle of the inference loop.
 
-        Author: NRB
+        Author: NRB - modified by NG
     '''
 
     def __init__(self, 
                  potentials_config, 
                  ppi_config, 
                  diffuser_config, 
-                 inference_config
+                 inference_config,
+                 target_feats
                  ):
 
         self.potentials_config = potentials_config
@@ -114,6 +115,14 @@ class PotentialManager:
 
                 if setting['type'] in potentials.require_hotspot_res:
                     setting.update(hotspot_res_update)
+        
+        # handling constraint_to_input potential - NG
+        constraints_update = {'target_xyz': target_feats['xyz_27']}
+        for setting in setting_list:
+            if setting['type'] in ['constraint_to_input', 'move_from_input']:
+                # constraints to the input structure makes only sense when using partial diffusion (I guess)
+                assert diffuser_config.partial_T, f"{setting['type']} potential only implemented with partial diffusion"
+                setting.update(constraints_update)
 
         self.potentials_to_apply = self.initialize_all_potentials(setting_list)
         self.T = diffuser_config.T
@@ -134,9 +143,16 @@ class PotentialManager:
         '''
 
         setting_dict = {entry.split(':')[0]:entry.split(':')[1] for entry in potstr.split(',')}
+        potential = setting_dict['type']
 
         for key in setting_dict:
-            if not key == 'type': setting_dict[key] = float(setting_dict[key])
+            if not key == 'type': 
+                
+                # do not convert residue range specifications to float
+                if potential in ['repulsion', 'constraint_to_input'] and key in ['residues', 'residues1', 'residues2']:
+                    setting_dict[key] = setting_dict[key]
+                
+                else: setting_dict[key] = float(setting_dict[key])
 
         return setting_dict
 
