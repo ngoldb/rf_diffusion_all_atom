@@ -149,7 +149,7 @@ class PotentialManager:
             if not key == 'type': 
                 
                 # do not convert residue range specifications to float
-                if potential in ['repulsion', 'constraint_to_input'] and key in ['residues', 'residues1', 'residues2']:
+                if potential in ['repulsion', 'constraint_to_input', 'move_from_input'] and key in ['residues', 'residues1', 'residues2']:
                     setting_dict[key] = setting_dict[key]
                 
                 else: setting_dict[key] = float(setting_dict[key])
